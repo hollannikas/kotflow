@@ -1,4 +1,4 @@
-package com.hollannikas.processbuilder
+package processbuilder
 
 fun kotFlow(
     name: String,
@@ -9,26 +9,36 @@ fun kotFlow(
     return builder.build()
 }
 
-class ProcessBuilder(private val name: String) {
-    private val flowElements = mutableListOf<FlowElement>()
+open class ProcessBuilder(private val name: String = "Anonymous") {
+    val flowNodes = mutableListOf<FlowNode>()
 
     fun initialState(name: String) {
         // Could add specific Initial State configuration here if needed
     }
 
-    fun startEvent(name: String) {
-        flowElements.add(StartEvent(name))
+    open fun startEvent(name: String) {
+        flowNodes.add(StartEvent(name))
     }
 
-    fun task(
+    fun exclusiveGateway(
+        name: String,
+        init: GatewayBuilder.() -> Unit,
+    ) {
+        val gateway = ExclusiveGateway(name) // Here we don't pass a ConditionEvaluator yet
+        val builder = GatewayBuilder(gateway) // Pass 'this' ProcessBuilder and the gateway
+        builder.init()
+        flowNodes.add(gateway)
+    }
+
+    open fun task(
         name: String,
         action: () -> Unit,
     ) {
-        flowElements.add(Task(name, action))
+        flowNodes.add(Task(name, action))
     }
 
-    fun endEvent(name: String) {
-        flowElements.add(EndEvent(name))
+    open fun endEvent(name: String) {
+        flowNodes.add(EndEvent(name))
     }
 
     fun ProcessBuilder.next(block: ProcessBuilder.() -> Unit) {
@@ -36,23 +46,35 @@ class ProcessBuilder(private val name: String) {
     }
 
     fun build(): Process {
-        if (flowElements.none { it::class == StartEvent::class }) {
+        if (flowNodes.none { it::class == StartEvent::class }) {
             throw ProcessDefinitionException("Process must have a Start Event")
         }
-        return Process(name, flowElements.toList())
+        return Process(name, flowNodes.toList())
     }
 }
 
-interface FlowElement {
+interface FlowNode {
     val name: String
 }
 
-data class Process(val name: String, val flowElements: List<FlowElement>)
+data class Process(val name: String, val flowNodes: List<FlowNode>)
 
-data class Task(override val name: String, val action: () -> Unit) : FlowElement
+data class Task(override val name: String, val action: () -> Unit) : FlowNode
 
-abstract class Event(override val name: String) : FlowElement
+abstract class Event(override val name: String) : FlowNode
 
 data class StartEvent(override val name: String) : Event(name)
 
 data class EndEvent(override val name: String) : Event(name)
+
+abstract class Gateway(override val name: String) : FlowNode
+
+class ExclusiveGateway(name: String) : Gateway(name) {
+    lateinit var conditionEvaluator: ConditionEvaluator
+    val successPath = mutableListOf<FlowNode>()
+    val failurePath = mutableListOf<FlowNode>()
+}
+
+interface ConditionEvaluator {
+    fun evaluate(): Boolean
+}

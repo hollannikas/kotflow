@@ -1,3 +1,3 @@
-package com.hollannikas.processbuilder
+package processbuilder
 
 class ProcessDefinitionException(s: String) : Throwable()

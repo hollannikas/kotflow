@@ -1,42 +1,55 @@
-package com.hollannikas.processbuilder
+package processbuilder
 
-const val STOP = "STOP"
+import java.util.Stack
 
 class KotFlowExecutor {
-    lateinit var currentState: String
+    private val executionStack = Stack<FlowNode>()
     val executionHistory = mutableListOf<String>()
 
     fun execute(process: Process) {
-        // ... find the initialState based on the process definition ...
-        val initialState = process.flowElements.first().name
-        currentState = initialState // Set the initial state
+        // Initialization: assuming your process has a 'root' property that is a FlowNode
+        executionStack.push(process.flowNodes.first())
 
-        while (currentState != STOP) {
-            val task = findElementByName(currentState, process)
-            if (task is Task) {
-                task.action()
+        while (executionStack.isNotEmpty()) {
+            val currentNode = executionStack.pop()
+            if (currentNode != null) {
+                executionHistory.add(currentNode.name)
+                processNode(currentNode)
+                executionStack.push(findNextNode(currentNode, process))
             }
-            executionHistory.add(currentState)
-            currentState = findNextState(currentState, process) // Update state for flow
         }
     }
 
-    private fun findNextState(
-        currentState: String,
+    private fun findNextNode(
+        currentNode: FlowNode,
         process: Process,
-    ): String {
-        val currentIndex = process.flowElements.indexOfFirst { it.name == currentState }
-        return if (currentIndex != -1 && currentIndex < process.flowElements.size - 1) {
-            process.flowElements[currentIndex + 1].name // Return the next task's name
-        } else {
-            STOP // Indicates the end of the process
+    ): FlowNode? {
+        return process.flowNodes.asSequence()
+            .dropWhile { it != currentNode }
+            .drop(1)
+            .firstOrNull()
+    }
+
+    private fun processNode(node: FlowNode) {
+        when (node) {
+            is Task -> {
+                node.action()
+            }
+            is ExclusiveGateway -> {
+                processGateway(node)
+            }
         }
+    }
+
+    private fun processGateway(gatewayNode: ExclusiveGateway) {
+        val path = if (gatewayNode.conditionEvaluator.evaluate()) gatewayNode.successPath else gatewayNode.failurePath
+        executionStack.push(path.first()) // Push the first element of the chosen path
     }
 
     private fun findElementByName(
         currentState: String,
         process: Process,
-    ): FlowElement {
-        return process.flowElements.first { it.name == currentState }
+    ): FlowNode {
+        return process.flowNodes.first { it.name == currentState }
     }
 }
