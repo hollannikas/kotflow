@@ -17,21 +17,26 @@ class KotFlowExecutor {
                 task.action()
             }
             executionHistory.add(currentState)
-            currentState = findNextState(currentState, process)  // Update state for flow
+            currentState = findNextState(currentState, process) // Update state for flow
         }
     }
 
-    private fun findNextState(currentState: String, process: Process): String {
+    private fun findNextState(
+        currentState: String,
+        process: Process,
+    ): String {
         val currentIndex = process.tasks.indexOfFirst { it.name == currentState }
         return if (currentIndex != -1 && currentIndex < process.tasks.size - 1) {
-            process.tasks[currentIndex + 1].name  // Return the next task's name
+            process.tasks[currentIndex + 1].name // Return the next task's name
         } else {
             STOP // Indicates the end of the process
         }
     }
 
-    private fun findTaskByName(currentState: String, process: Process): FlowElement {
+    private fun findTaskByName(
+        currentState: String,
+        process: Process,
+    ): FlowElement {
         return process.tasks.first { it.name == currentState }
     }
-
 }

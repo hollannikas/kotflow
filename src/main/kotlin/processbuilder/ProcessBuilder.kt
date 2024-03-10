@@ -1,13 +1,16 @@
 package com.hollannikas.processbuilder
 
-fun kotFlow(name: String, init: ProcessBuilder.() -> Unit): Process {
+fun kotFlow(
+    name: String,
+    init: ProcessBuilder.() -> Unit,
+): Process {
     val builder = ProcessBuilder(name)
     builder.init()
     return builder.build()
 }
 
-class ProcessBuilder(val name: String) {
-    val flowElements = mutableListOf<FlowElement>()
+class ProcessBuilder(private val name: String) {
+    private val flowElements = mutableListOf<FlowElement>()
 
     fun initialState(name: String) {
         // Could add specific Initial State configuration here if needed
@@ -17,7 +20,10 @@ class ProcessBuilder(val name: String) {
         flowElements.add(StartEvent(name))
     }
 
-    fun task(name: String, action: () -> Unit) {
+    fun task(
+        name: String,
+        action: () -> Unit,
+    ) {
         flowElements.add(Task(name, action))
     }
 
@@ -26,7 +32,7 @@ class ProcessBuilder(val name: String) {
     }
 
     fun ProcessBuilder.next(block: ProcessBuilder.() -> Unit) {
-        block()  // Execute the next task or other DSL element in the flow
+        block() // Execute the next task or other DSL element in the flow
     }
 
     fun build(): Process {
@@ -40,7 +46,11 @@ class ProcessBuilder(val name: String) {
 interface FlowElement {
     val name: String
 }
+
 data class Process(val name: String, val tasks: List<FlowElement>)
+
 data class Task(override val name: String, val action: () -> Unit) : FlowElement
+
 abstract class Event(override val name: String) : FlowElement
+
 data class StartEvent(override val name: String) : Event(name)

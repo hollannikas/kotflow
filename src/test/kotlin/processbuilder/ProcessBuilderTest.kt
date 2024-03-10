@@ -6,15 +6,15 @@ import com.hollannikas.processbuilder.kotFlow
 import kotlin.test.Test
 
 class ProcessBuilderTest {
-
     @Test
     fun `executes tasks in sequential order`() {
-        val process = kotFlow("Test Process") {
-            startEvent("Start")
-            task("Task A") { println("A") }
-            task("Task B") { println("B") }
-            endEvent("End")
-        }
+        val process =
+            kotFlow("Test Process") {
+                startEvent("Start")
+                task("Task A") { println("A") }
+                task("Task B") { println("B") }
+                endEvent("End")
+            }
 
         // Need an Executor to test the KotFlow Process
         val executor = KotFlowExecutor()
