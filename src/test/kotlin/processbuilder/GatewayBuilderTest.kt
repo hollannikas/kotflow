@@ -36,4 +36,74 @@ class GatewayBuilderTest {
         assert(executor.executionHistory.contains("Success Task"))
         assert(!executor.executionHistory.contains("Failure Task"))
     }
+
+    @Test
+    fun `executes tasks in failure path when condition is false`() {
+        val process =
+            kotFlow("Process with Gateway") {
+                startEvent("Start")
+                exclusiveGateway("Decision Point") {
+                    condition {
+                        false
+                    }
+                    success {
+                        task("Success Task") { /* ... */ }
+                    }
+                    failure {
+                        task("Failure Task") { /* ... */ }
+                    }
+                }
+                endEvent("End")
+            }
+
+        val executor = KotFlowExecutor()
+        executor.execute(process)
+
+        assert(executor.executionHistory.contains("Failure Task"))
+        assert(!executor.executionHistory.contains("Success Task"))
+    }
+
+    @Test
+    fun `executes tasks in success path when condition is true and failure path is not defined`() {
+        val process =
+            kotFlow("Process with Gateway") {
+                startEvent("Start")
+                exclusiveGateway("Decision Point") {
+                    condition {
+                        true
+                    }
+                    success {
+                        task("Success Task") { /* ... */ }
+                    }
+                }
+                endEvent("End")
+            }
+
+        val executor = KotFlowExecutor()
+        executor.execute(process)
+
+        assert(executor.executionHistory.contains("Success Task"))
+    }
+
+    @Test
+    fun `executes tasks in failure path when condition is false and success path is not defined`() {
+        val process =
+            kotFlow("Process with Gateway") {
+                startEvent("Start")
+                exclusiveGateway("Decision Point") {
+                    condition {
+                        false
+                    }
+                    failure {
+                        task("Failure Task") { /* ... */ }
+                    }
+                }
+                endEvent("End")
+            }
+
+        val executor = KotFlowExecutor()
+        executor.execute(process)
+
+        assert(executor.executionHistory.contains("Failure Task"))
+    }
 }
