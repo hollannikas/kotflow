@@ -45,11 +45,4 @@ class KotFlowExecutor {
         val path = if (gatewayNode.conditionEvaluator.evaluate()) gatewayNode.successPath else gatewayNode.failurePath
         executionStack.push(path.first()) // Push the first element of the chosen path
     }
-
-    private fun findElementByName(
-        currentState: String,
-        process: Process,
-    ): FlowNode {
-        return process.flowNodes.first { it.name == currentState }
-    }
 }

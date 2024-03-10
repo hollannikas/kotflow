@@ -9,7 +9,7 @@ class GatewayBuilderTest {
         val process =
             kotFlow("Process with Gateway") {
                 // ... setup ...
-                startEvent("Start")
+                start("Start")
                 exclusiveGateway("Decision Point") {
                     condition {
                         true
@@ -21,7 +21,7 @@ class GatewayBuilderTest {
                         task("Failure Task") { /* ... */ }
                     }
                 }
-                endEvent("End")
+                end("End")
                 // ... rest of the process ...
             }
 
@@ -41,7 +41,7 @@ class GatewayBuilderTest {
     fun `executes tasks in failure path when condition is false`() {
         val process =
             kotFlow("Process with Gateway") {
-                startEvent("Start")
+                start("Start")
                 exclusiveGateway("Decision Point") {
                     condition {
                         false
@@ -53,7 +53,7 @@ class GatewayBuilderTest {
                         task("Failure Task") { /* ... */ }
                     }
                 }
-                endEvent("End")
+                end("End")
             }
 
         val executor = KotFlowExecutor()
@@ -67,7 +67,7 @@ class GatewayBuilderTest {
     fun `executes tasks in success path when condition is true and failure path is not defined`() {
         val process =
             kotFlow("Process with Gateway") {
-                startEvent("Start")
+                start("Start")
                 exclusiveGateway("Decision Point") {
                     condition {
                         true
@@ -76,7 +76,7 @@ class GatewayBuilderTest {
                         task("Success Task") { /* ... */ }
                     }
                 }
-                endEvent("End")
+                end("End")
             }
 
         val executor = KotFlowExecutor()
@@ -89,7 +89,7 @@ class GatewayBuilderTest {
     fun `executes tasks in failure path when condition is false and success path is not defined`() {
         val process =
             kotFlow("Process with Gateway") {
-                startEvent("Start")
+                start("Start")
                 exclusiveGateway("Decision Point") {
                     condition {
                         false
@@ -98,7 +98,7 @@ class GatewayBuilderTest {
                         task("Failure Task") { /* ... */ }
                     }
                 }
-                endEvent("End")
+                end("End")
             }
 
         val executor = KotFlowExecutor()

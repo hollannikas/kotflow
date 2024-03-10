@@ -6,7 +6,7 @@ fun main() {
 
     val simpleProcess =
         kotFlow("Simple Sequential Process") {
-            startEvent("Start")
+            start("Start")
             context["someKey"] = "someValue"
             task("Task A") { println("Task A") }
             task("Task B") {
@@ -19,12 +19,10 @@ fun main() {
                     task("Success Task") { println("Success Task") }
                 }
                 failure {
-                    task("Failure Task") {
-                        println("Failure Task")
-                    }
+                    task("Failure Task") { println("Failure Task") }
                 }
             }
-            endEvent("End")
+            end("End")
         }
 
     val executor = KotFlowExecutor()

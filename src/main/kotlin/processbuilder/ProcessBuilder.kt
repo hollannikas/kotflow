@@ -12,7 +12,7 @@ fun kotFlow(
 open class ProcessBuilder(private val name: String = "Anonymous") {
     val flowNodes = mutableListOf<FlowNode>()
 
-    open fun startEvent(name: String) {
+    open fun start(name: String) {
         flowNodes.add(StartEvent(name))
     }
 
@@ -33,7 +33,7 @@ open class ProcessBuilder(private val name: String = "Anonymous") {
         flowNodes.add(Task(name, action))
     }
 
-    open fun endEvent(name: String) {
+    open fun end(name: String) {
         flowNodes.add(EndEvent(name))
     }
 
