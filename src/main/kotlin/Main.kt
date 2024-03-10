@@ -18,7 +18,7 @@ fun main() {
 
         // Placeholder for execution logic
         println("Process Name: ${simpleProcess.name}")
-        for (task in simpleProcess.tasks) {
+        for (task in simpleProcess.flowElements) {
             println("Executing Task: ${task.name}")
             if (task is Task) {
                 task.action()

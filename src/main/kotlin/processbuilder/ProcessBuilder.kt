@@ -47,7 +47,7 @@ interface FlowElement {
     val name: String
 }
 
-data class Process(val name: String, val tasks: List<FlowElement>)
+data class Process(val name: String, val flowElements: List<FlowElement>)
 
 data class Task(override val name: String, val action: () -> Unit) : FlowElement
 
