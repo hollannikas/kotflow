@@ -12,10 +12,6 @@ fun kotFlow(
 open class ProcessBuilder(private val name: String = "Anonymous") {
     val flowNodes = mutableListOf<FlowNode>()
 
-    fun initialState(name: String) {
-        // Could add specific Initial State configuration here if needed
-    }
-
     open fun startEvent(name: String) {
         flowNodes.add(StartEvent(name))
     }
@@ -39,10 +35,6 @@ open class ProcessBuilder(private val name: String = "Anonymous") {
 
     open fun endEvent(name: String) {
         flowNodes.add(EndEvent(name))
-    }
-
-    fun ProcessBuilder.next(block: ProcessBuilder.() -> Unit) {
-        block() // Execute the next task or other DSL element in the flow
     }
 
     fun build(): Process {

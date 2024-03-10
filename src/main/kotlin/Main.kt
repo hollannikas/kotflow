@@ -4,11 +4,17 @@ import processbuilder.kotFlow
 fun main() {
     val simpleProcess =
         kotFlow("Simple Sequential Process") {
-            initialState("Start") // Mark the starting point
             startEvent("Start")
             task("Task A") { println("Task A") }
-            next {
-                task("Task B") { println("Task B") }
+            task("Task B") { println("Task B") }
+            exclusiveGateway("Decision Point") {
+                condition { false }
+                success {
+                    task("Success Task") { println("Success Task") }
+                }
+                failure {
+                    task("Failure Task") { println("Failure Task") }
+                }
             }
             endEvent("End")
         }
