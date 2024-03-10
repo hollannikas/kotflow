@@ -21,7 +21,7 @@ class ProcessBuilderTest {
         executor.execute(process)
 
         // Assertions about task execution order
-        val expectedExecutionOrder = listOf("Start", "Task A", "Task B")
+        val expectedExecutionOrder = listOf("Start", "Task A", "Task B", "End")
         assert(executor.executionHistory == expectedExecutionOrder)
         assert(executor.currentState == STOP) // After the whole process
     }

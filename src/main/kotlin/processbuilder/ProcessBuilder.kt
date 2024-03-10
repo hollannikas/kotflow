@@ -28,7 +28,7 @@ class ProcessBuilder(private val name: String) {
     }
 
     fun endEvent(name: String) {
-        // Could add specific End Event configuration here if needed
+        flowElements.add(EndEvent(name))
     }
 
     fun ProcessBuilder.next(block: ProcessBuilder.() -> Unit) {
@@ -54,3 +54,5 @@ data class Task(override val name: String, val action: () -> Unit) : FlowElement
 abstract class Event(override val name: String) : FlowElement
 
 data class StartEvent(override val name: String) : Event(name)
+
+data class EndEvent(override val name: String) : Event(name)
