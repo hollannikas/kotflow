@@ -75,6 +75,6 @@ class ExclusiveGateway(name: String) : Gateway(name) {
     val failurePath = mutableListOf<FlowNode>()
 }
 
-interface ConditionEvaluator {
+fun interface ConditionEvaluator {
     fun evaluate(): Boolean
 }

@@ -2,10 +2,7 @@ package processbuilder
 
 class GatewayBuilder(private val gateway: ExclusiveGateway) {
     fun condition(evaluation: () -> Boolean) {
-        gateway.conditionEvaluator =
-            object : ConditionEvaluator {
-                override fun evaluate() = evaluation()
-            }
+        gateway.conditionEvaluator = ConditionEvaluator { evaluation() } // Wrap the lambda in ConditionEvaluator
     }
 
     fun failure(onFail: ProcessBuilder.() -> Unit) {
