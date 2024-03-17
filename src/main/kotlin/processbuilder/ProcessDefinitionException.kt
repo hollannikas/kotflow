@@ -1,3 +1,3 @@
 package processbuilder
 
-class ProcessDefinitionException(s: String) : Throwable()
+class ProcessDefinitionException(s: String) : Throwable(s)
