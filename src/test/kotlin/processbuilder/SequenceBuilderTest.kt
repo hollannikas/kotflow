@@ -2,15 +2,15 @@ package processbuilder
 
 import kotlin.test.Test
 
-class ProcessBuilderTest {
+class SequenceBuilderTest {
     @Test
     fun `executes tasks in sequential order`() {
         val process =
             kotFlow("Test Process") {
-                start("Start")
-                task("Task A") { println("A") }
-                task("Task B") { println("B") }
-                end("End")
+                receive("Start")
+                invoke("Task A") { println("A") }
+                invoke("Task B") { println("B") }
+                reply("End")
             }
 
         // Need an Executor to test the KotFlow Process

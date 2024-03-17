@@ -9,19 +9,19 @@ class GatewayBuilderTest {
         val process =
             kotFlow("Process with Gateway") {
                 // ... setup ...
-                start("Start")
+                receive("Start")
                 exclusiveGateway("Decision Point") {
                     condition {
                         true
                     }
                     success {
-                        task("Success Task") { /* ... */ }
+                        invoke("Success Task") { /* ... */ }
                     }
                     failure {
-                        task("Failure Task") { /* ... */ }
+                        invoke("Failure Task") { /* ... */ }
                     }
                 }
-                end("End")
+                reply("End")
                 // ... rest of the process ...
             }
 
@@ -41,19 +41,19 @@ class GatewayBuilderTest {
     fun `executes tasks in failure path when condition is false`() {
         val process =
             kotFlow("Process with Gateway") {
-                start("Start")
+                receive("Start")
                 exclusiveGateway("Decision Point") {
                     condition {
                         false
                     }
                     success {
-                        task("Success Task") { /* ... */ }
+                        invoke("Success Task") { /* ... */ }
                     }
                     failure {
-                        task("Failure Task") { /* ... */ }
+                        invoke("Failure Task") { /* ... */ }
                     }
                 }
-                end("End")
+                reply("End")
             }
 
         val executor = KotFlowExecutor()
@@ -67,16 +67,16 @@ class GatewayBuilderTest {
     fun `executes tasks in success path when condition is true and failure path is not defined`() {
         val process =
             kotFlow("Process with Gateway") {
-                start("Start")
+                receive("Start")
                 exclusiveGateway("Decision Point") {
                     condition {
                         true
                     }
                     success {
-                        task("Success Task") { /* ... */ }
+                        invoke("Success Task") { /* ... */ }
                     }
                 }
-                end("End")
+                reply("End")
             }
 
         val executor = KotFlowExecutor()
@@ -89,16 +89,16 @@ class GatewayBuilderTest {
     fun `executes tasks in failure path when condition is false and success path is not defined`() {
         val process =
             kotFlow("Process with Gateway") {
-                start("Start")
+                receive("Start")
                 exclusiveGateway("Decision Point") {
                     condition {
                         false
                     }
                     failure {
-                        task("Failure Task") { /* ... */ }
+                        invoke("Failure Task") { /* ... */ }
                     }
                 }
-                end("End")
+                reply("End")
             }
 
         val executor = KotFlowExecutor()

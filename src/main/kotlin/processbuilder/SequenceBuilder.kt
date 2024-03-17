@@ -2,17 +2,17 @@ package processbuilder
 
 fun kotFlow(
     name: String,
-    init: ProcessBuilder.() -> Unit,
-): Process {
-    val builder = ProcessBuilder(name)
+    init: SequenceBuilder.() -> Unit,
+): Sequence {
+    val builder = SequenceBuilder(name)
     builder.init()
     return builder.build()
 }
 
-open class ProcessBuilder(private val name: String = "Anonymous") {
+open class SequenceBuilder(private val name: String = "Anonymous") {
     val flowNodes = mutableListOf<FlowNode>()
 
-    open fun start(name: String) {
+    open fun receive(name: String) {
         flowNodes.add(StartEvent(name))
     }
 
@@ -26,22 +26,22 @@ open class ProcessBuilder(private val name: String = "Anonymous") {
         flowNodes.add(gateway)
     }
 
-    open fun task(
+    open fun invoke(
         name: String,
         action: () -> Unit,
     ) {
         flowNodes.add(Task(name, action))
     }
 
-    open fun end(name: String) {
+    open fun reply(name: String) {
         flowNodes.add(EndEvent(name))
     }
 
-    fun build(): Process {
+    fun build(): Sequence {
         if (flowNodes.none { it::class == StartEvent::class }) {
             throw ProcessDefinitionException("Process must have a Start Event")
         }
-        return Process(name, flowNodes.toList())
+        return Sequence(name, flowNodes.toList())
     }
 }
 
@@ -49,7 +49,7 @@ interface FlowNode {
     val name: String
 }
 
-data class Process(val name: String, val flowNodes: List<FlowNode>)
+data class Sequence(val name: String, val flowNodes: List<FlowNode>)
 
 data class Task(override val name: String, val action: () -> Unit) : FlowNode
 

@@ -6,25 +6,25 @@ class KotFlowExecutor {
     private val executionStack = Stack<FlowNode>()
     val executionHistory = mutableListOf<String>()
 
-    fun execute(process: Process) {
+    fun execute(sequence: Sequence) {
         // Initialization: assuming your process has a 'root' property that is a FlowNode
-        executionStack.push(process.flowNodes.first())
+        executionStack.push(sequence.flowNodes.first())
 
         while (executionStack.isNotEmpty()) {
             val currentNode = executionStack.pop()
             if (currentNode != null) {
                 executionHistory.add(currentNode.name)
                 processNode(currentNode)
-                executionStack.push(findNextNode(currentNode, process))
+                executionStack.push(findNextNode(currentNode, sequence))
             }
         }
     }
 
     private fun findNextNode(
         currentNode: FlowNode,
-        process: Process,
+        sequence: Sequence,
     ): FlowNode? {
-        return process.flowNodes.asSequence()
+        return sequence.flowNodes.asSequence()
             .dropWhile { it != currentNode }
             .drop(1)
             .firstOrNull()
