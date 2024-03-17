@@ -1,19 +1,10 @@
 package processbuilder
 
-fun kotFlow(
-    name: String,
-    init: SequenceBuilder.() -> Unit,
-): Sequence {
-    val builder = SequenceBuilder(name)
-    builder.init()
-    return builder.build()
-}
-
 open class SequenceBuilder(private val name: String = "Anonymous") {
-    val flowNodes = mutableListOf<FlowNode>()
+    val activities = mutableListOf<Activity>()
 
     open fun receive(name: String) {
-        flowNodes.add(StartEvent(name))
+        activities.add(StartEvent(name))
     }
 
     fun exclusiveGateway(
@@ -23,48 +14,48 @@ open class SequenceBuilder(private val name: String = "Anonymous") {
         val gateway = ExclusiveGateway(name) // Here we don't pass a ConditionEvaluator yet
         val builder = GatewayBuilder(gateway) // Pass 'this' ProcessBuilder and the gateway
         builder.init()
-        flowNodes.add(gateway)
+        activities.add(gateway)
     }
 
     open fun invoke(
         name: String,
         action: () -> Unit,
     ) {
-        flowNodes.add(Task(name, action))
+        activities.add(Task(name, action))
     }
 
     open fun reply(name: String) {
-        flowNodes.add(EndEvent(name))
+        activities.add(EndEvent(name))
     }
 
     fun build(): Sequence {
-        if (flowNodes.none { it::class == StartEvent::class }) {
+        if (activities.none { it::class == StartEvent::class }) {
             throw ProcessDefinitionException("Process must have a Start Event")
         }
-        return Sequence(name, flowNodes.toList())
+        return Sequence(name, activities.toList())
     }
 }
 
-interface FlowNode {
+interface Activity {
     val name: String
 }
 
-data class Sequence(val name: String, val flowNodes: List<FlowNode>)
+data class Sequence(val name: String, val activities: List<Activity>)
 
-data class Task(override val name: String, val action: () -> Unit) : FlowNode
+data class Task(override val name: String, val action: () -> Unit) : Activity
 
-abstract class Event(override val name: String) : FlowNode
+abstract class Event(override val name: String) : Activity
 
 data class StartEvent(override val name: String) : Event(name)
 
 data class EndEvent(override val name: String) : Event(name)
 
-abstract class Gateway(override val name: String) : FlowNode
+abstract class Gateway(override val name: String) : Activity
 
 class ExclusiveGateway(name: String) : Gateway(name) {
     lateinit var conditionEvaluator: ConditionEvaluator
-    val successPath = mutableListOf<FlowNode>()
-    val failurePath = mutableListOf<FlowNode>()
+    val successPath = mutableListOf<Activity>()
+    val failurePath = mutableListOf<Activity>()
 }
 
 fun interface ConditionEvaluator {

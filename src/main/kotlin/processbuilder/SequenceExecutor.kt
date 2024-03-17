@@ -2,13 +2,25 @@ package processbuilder
 
 import java.util.Stack
 
-class KotFlowExecutor {
-    private val executionStack = Stack<FlowNode>()
+class ProcessExecutor(private val process: Process) {
+    private val sequenceExecutor = SequenceExecutor()
+    val executionHistory = mutableListOf<String>()
+
+    fun execute() {
+        process.sequences.forEach {
+            sequenceExecutor.execute(it)
+            executionHistory.addAll(sequenceExecutor.executionHistory)
+        }
+    }
+}
+
+class SequenceExecutor {
+    private val executionStack = Stack<Activity>()
     val executionHistory = mutableListOf<String>()
 
     fun execute(sequence: Sequence) {
         // Initialization: assuming your process has a 'root' property that is a FlowNode
-        executionStack.push(sequence.flowNodes.first())
+        executionStack.push(sequence.activities.first())
 
         while (executionStack.isNotEmpty()) {
             val currentNode = executionStack.pop()
@@ -21,16 +33,16 @@ class KotFlowExecutor {
     }
 
     private fun findNextNode(
-        currentNode: FlowNode,
+        currentNode: Activity,
         sequence: Sequence,
-    ): FlowNode? {
-        return sequence.flowNodes.asSequence()
+    ): Activity? {
+        return sequence.activities.asSequence()
             .dropWhile { it != currentNode }
             .drop(1)
             .firstOrNull()
     }
 
-    private fun processNode(node: FlowNode) {
+    private fun processNode(node: Activity) {
         when (node) {
             is Task -> {
                 node.action()

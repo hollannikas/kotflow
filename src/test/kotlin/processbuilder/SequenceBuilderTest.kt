@@ -7,15 +7,17 @@ class SequenceBuilderTest {
     fun `executes tasks in sequential order`() {
         val process =
             kotFlow("Test Process") {
-                receive("Start")
-                invoke("Task A") { println("A") }
-                invoke("Task B") { println("B") }
-                reply("End")
+                sequence("Simple sequence") {
+                    receive("Start")
+                    invoke("Task A") { println("A") }
+                    invoke("Task B") { println("B") }
+                    reply("End")
+                }
             }
 
         // Need an Executor to test the KotFlow Process
-        val executor = KotFlowExecutor()
-        executor.execute(process)
+        val executor = ProcessExecutor(process)
+        executor.execute()
 
         // Assertions about task execution order
         val expectedExecutionOrder = listOf("Start", "Task A", "Task B", "End")
