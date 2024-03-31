@@ -26,4 +26,4 @@ open class ProcessBuilder(private val name: String = "Anonymous") {
     }
 }
 
-data class Process(val name: String, val sequences: List<Sequence>)
+data class Process(val name: String, val sequences: List<Sequence> = emptyList())

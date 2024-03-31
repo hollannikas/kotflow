@@ -1,0 +1,10 @@
+{
+  "name": "Simple Sequential Process",
+  "sequences": [
+    {
+      "name": "Simple Sequential Process",
+      "activities": [
+      ]
+    }
+  ]
+}

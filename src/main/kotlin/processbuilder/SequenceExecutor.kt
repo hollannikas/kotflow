@@ -20,6 +20,8 @@ class SequenceExecutor {
 
     fun execute(sequence: Sequence) {
         // Initialization: assuming your process has a 'root' property that is a FlowNode
+        if (sequence.activities.isEmpty()) return
+
         executionStack.push(sequence.activities.first())
 
         while (executionStack.isNotEmpty()) {
